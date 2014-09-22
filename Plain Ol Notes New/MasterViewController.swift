@@ -30,11 +30,27 @@ class MasterViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        makeObjects()
+        tableView.reloadData()
+    }
+    
+    func makeObjects() {
+        let allNotesArray = Array(Data.getAllNotes().keys)
+        objects = NSMutableArray(array: sorted(allNotesArray, >))
+    }
 
     func insertNewObject(sender: AnyObject) {
-        objects.insertObject(NSDate.date(), atIndex: 0)
+        makeObjects()
+        let key = NSDate.date().description
+        Data.setNote(note: K_DEFAULT_TEXT, forKey: key)
+        Data.setCurrentKey(key)
+        objects.insertObject(key, atIndex: 0)
         let indexPath = NSIndexPath(forRow: 0, inSection: 0)
         self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+        self.performSegueWithIdentifier(K_DETAIL_VIEW, sender: self)
     }
 
     // MARK: - Segues
@@ -42,7 +58,7 @@ class MasterViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let object = objects[indexPath.row] as NSDate
+                let object = objects[indexPath.row] as String
             (segue.destinationViewController as DetailViewController).detailItem = object
             }
         }
@@ -59,10 +75,10 @@ class MasterViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        println("called")
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
-
-        let object = objects[indexPath.row] as NSDate
-        cell.textLabel?.text = object.description
+        let object = objects[indexPath.row] as String
+        cell.textLabel?.text = Data.getAllNotes()[object]
         return cell
     }
 
@@ -73,6 +89,9 @@ class MasterViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            // delete the note from the dictionary and save the changes
+            Data.removeNoteForKey(objects[indexPath.row] as String)
+            Data.saveNotes()
             objects.removeObjectAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
