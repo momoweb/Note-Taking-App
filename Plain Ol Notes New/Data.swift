@@ -26,7 +26,7 @@ class Data {
         get {
             if Storage.model == nil {
                 if let ud = (NSUserDefaults.standardUserDefaults()).dictionaryForKey(K_ALL_NOTES) {
-                    Storage.model = (ud as [String : String])
+                    Storage.model = (ud as! [String : String])
                 } else {
                     Storage.model = [String : String]()
                 }

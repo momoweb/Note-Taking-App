@@ -16,7 +16,7 @@ class DetailViewController: UIViewController {
         didSet {
             // Update the view.
             //called when there is a note already and the user clicks on it (calls prepareForSegue). We need to setup the currentKey here otherwise Data.getCurrentKey will fail at configureView()
-            Data.setCurrentKey(detailItem as String)
+            Data.setCurrentKey(detailItem as! String)
             self.configureView()
         }
     }

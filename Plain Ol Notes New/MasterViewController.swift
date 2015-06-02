@@ -44,7 +44,7 @@ class MasterViewController: UITableViewController {
 
     func insertNewObject(sender: AnyObject) {
         makeObjects()
-        let key = NSDate.date().description
+        let key = NSDate().description
         Data.setNote(note: K_DEFAULT_TEXT, forKey: key)
         Data.setCurrentKey(key)
         objects.insertObject(key, atIndex: 0)
@@ -58,8 +58,8 @@ class MasterViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let object = objects[indexPath.row] as String
-            (segue.destinationViewController as DetailViewController).detailItem = object
+                let object = objects[indexPath.row] as! String
+            (segue.destinationViewController as! DetailViewController).detailItem = object
             }
         }
     }
@@ -76,8 +76,8 @@ class MasterViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         println("called")
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
-        let object = objects[indexPath.row] as String
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+        let object = objects[indexPath.row] as! String
         cell.textLabel?.text = Data.getAllNotes()[object]
         return cell
     }
@@ -90,7 +90,7 @@ class MasterViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // delete the note from the dictionary and save the changes
-            Data.removeNoteForKey(objects[indexPath.row] as String)
+            Data.removeNoteForKey(objects[indexPath.row] as! String)
             Data.saveNotes()
             objects.removeObjectAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
